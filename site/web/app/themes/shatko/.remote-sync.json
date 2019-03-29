@@ -1,0 +1,15 @@
+{
+  "uploadOnSave": false,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "projektil.com",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "projektil_ssh",
+  "password": "o&BP(KIGFaJx&o&BP(KIGFaJx&",
+  "watch": [],
+  "transport": "scp",
+  "target": "vhosts/dev/shatko/wp-content/themes/shatko"
+}

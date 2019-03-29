@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 e5cf3e876e2e0b03a6979765df8d9c73ce8c86df shatko <mladen.salaj@gmail.com> 1553073855 +0100	commit (initial): Initial folder structure
+e5cf3e876e2e0b03a6979765df8d9c73ce8c86df b2f32b5777792a2bae6170b3d1073727cfb02ffa shatko <mladen.salaj@gmail.com> 1553079543 +0100	commit: Sets basic development environment
+b2f32b5777792a2bae6170b3d1073727cfb02ffa 12efa4e3efac500c48cc97f93f83b4fc7434a675 shatko <mladen.salaj@gmail.com> 1553264822 +0100	commit: Adds, sets and tests Atom remote-sync package
