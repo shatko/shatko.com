@@ -32,8 +32,8 @@
         streetViewControl: false,
         fullscreenControl: false,
         center: {
-          lat: 60,
-          lng: 10
+          lat: 50,
+          lng: 0
         },
         scrollwheel: false
       });
@@ -197,6 +197,8 @@
         maxZoom: 6
         });
 
+      // map.setZoom(map.getZoom() * 2);
+
       var markers = features.map(function(feature) {
         var singlePin = new google.maps.Marker({
           position: feature,
@@ -213,9 +215,9 @@
             pixelOffset: new google.maps.Size(0, 0),
         });
 
-        google.maps.event.addListener(singlePin, 'click', function() {
-          infowindow.open(map,singlePin);
-        });
+        // google.maps.event.addListener(singlePin, 'click', function() {
+        //   infowindow.open(map,singlePin);
+        // });
         infowindow.open(map,singlePin);
         return singlePin;
 
@@ -229,20 +231,64 @@
       );
 
       markerCluster.setMaxZoom(2);
-      markerCluster.setGridSize(5000);
+      markerCluster.setGridSize(200);
+      markerCluster.setStyles([
+        {
+          textColor: 'white',
+          url: 'http://shatko.test/app/themes/shatko/dist/images/tl-map-cluster.png',
+          height: 100,
+          width: 100
+        },
+       {
+          textColor: 'white',
+          url: 'http://shatko.test/app/themes/shatko/dist/images/tl-map-cluster.png',
+          height: 100,
+          width: 100
+        },
+       {
+          textColor: 'white',
+          url: 'http://shatko.test/app/themes/shatko/dist/images/tl-map-cluster.png',
+          height: 100,
+          width: 100
+        }
+      ]);
       markerCluster.redraw();
-      // console.log(markerCluster.getMarkers());
 
-
-      console.log(markerCluster);
 
 
       map.addListener('tilesloaded', function () {
-        console.log('test');
+        setTimeout(function(){
+          console.log('Tiles loaded: ' + map.getZoom());
+          var firstCluster = jQuery('.gm-style').children('div:first').children('div:nth-child(3)').children().children('div:nth-child(3)').children('div:nth-child(1)');
+          var firstNumberOfLocations = firstCluster.text();
+          var secondCluster = jQuery('.gm-style').children('div:first').children('div:nth-child(3)').children().children('div:nth-child(3)').children('div:nth-child(2)');
+          var secondNumberOfLocations = secondCluster.text();
+          var thirdCluster = jQuery('.gm-style').children('div:first').children('div:nth-child(3)').children().children('div:nth-child(3)').children('div:nth-child(3)');
+          var thirdNumberOfLocations = thirdCluster.text();
+
+          if (map.getZoom() == 2) {
+            firstCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Europa', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + firstNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
+            secondCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Asien', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + secondNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
+            thirdCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Amerika', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + thirdNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
+          } else {
+            firstCluster.html( firstNumberOfLocations );
+            secondCluster.html( secondNumberOfLocations );
+            thirdCluster.html( thirdNumberOfLocations );
+          }
+        }, 1000);
+      });
+
+      map.addListener('idle', function(evt) {
         jQuery('.pin-info-container').on( 'click', function() {
-          jQuery(this).toggleClass('grid-item-opened');
+          console.log(jQuery(this).text());
+          jQuery(this).toggleClass('pro-class');
+          map.setZoom(2);
+          var center = new google.maps.LatLng(50, 0);
+          map.panTo(center);
         });
-      })
+      });
+
+
 
     }
 
@@ -257,15 +303,14 @@
           label: '',
           pin: '@php echo App\asset_path('images/tl-map-pin.png'); @endphp',
           title: '',
-          infocontent: '<div class="pin-info-container"><p id="@php echo cleanme(get_sub_field('link_text')); @endphp">@php echo get_sub_field('link_text'); @endphp</p></div>'
+          // infocontent: '<div class="pin-info-container"><p id="@php echo cleanme(get_sub_field('link_text')); @endphp">@php echo get_sub_field('link_text'); @endphp</p></div>'
+          infocontent: '<div class="pin-info-container">@php echo get_sub_field('link_text'); @endphp</div>'
         },
         @php
         endwhile;
       endif;
       @endphp
     ]
-
-
 
     </script>
 
@@ -311,6 +356,38 @@
         transform: translate(-50%,-50%) rotate(0deg);
         top: 2px;
         background: none;
+      }
+
+      /* Pins */
+      .pin-info-container {
+        cursor: pointer;
+      }
+
+      /* Cluster */
+      .cluster-content {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .cluster-title {
+        display: inline-block;
+        width: 100%;
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        text-transform: uppercase;
+        font-size: 16px;
+      }
+
+      .cluster-text {
+        display: inline-block;
+        width: 100%;
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        text-transform: uppercase;
       }
 
       .contact-form-wrapper {
