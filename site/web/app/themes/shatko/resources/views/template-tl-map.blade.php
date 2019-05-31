@@ -17,20 +17,26 @@
     }
     @endphp
 
-    <div class="contact-form-wrapper"></div>
-    <div id="map"></div>
+    <div class="gm-locations-wrapper">
+      <div class="contact-form-wrapper"></div>
+      <div id="map"></div>
+      <div class="zoom-out">-</div>
+    </div>
 
 
     <script>
+
+
     function initMap() {
       var map = new google.maps.Map(document.getElementById('map'), {
         // zoom: 5,
         zoom: 2,
-        zoomControl: true,
+        zoomControl: false,
         mapTypeControl: false,
         scaleControl: false,
         streetViewControl: false,
         fullscreenControl: false,
+        draggable: false,
         center: {
           lat: 50,
           lng: 0
@@ -197,8 +203,6 @@
         maxZoom: 6
         });
 
-      // map.setZoom(map.getZoom() * 2);
-
       var markers = features.map(function(feature) {
         var singlePin = new google.maps.Marker({
           position: feature,
@@ -208,6 +212,7 @@
 
         singlePin.addListener('click', function() {
            infowindow.open(map, singlePin);
+           console.log('pin');
         });
 
         var infowindow = new google.maps.InfoWindow({
@@ -215,9 +220,12 @@
             pixelOffset: new google.maps.Size(0, 0),
         });
 
+
+
         // google.maps.event.addListener(singlePin, 'click', function() {
         //   infowindow.open(map,singlePin);
         // });
+
         infowindow.open(map,singlePin);
         return singlePin;
 
@@ -257,6 +265,34 @@
 
 
       map.addListener('tilesloaded', function () {
+
+        // jQuery('.pin-info-container').on( 'click', function(e) {
+        //   console.log(jQuery(this).text());
+        //   jQuery(this).toggleClass('pro-class');
+        //   map.setZoom(2);
+        //   var center = new google.maps.LatLng(50, 0);
+        //   map.panTo(center);
+        // });
+
+      });
+
+
+
+
+
+      map.addListener('idle', function() {
+
+
+
+        jQuery('.zoom-out').one( 'click', function() {
+          // console.log(jQuery(this).text());
+          // jQuery(this).toggleClass('pro-class');
+          map.setZoom(2);
+          var center = new google.maps.LatLng(50, 0);
+          map.panTo(center);
+        });
+
+
         setTimeout(function(){
           console.log('Tiles loaded: ' + map.getZoom());
           var firstCluster = jQuery('.gm-style').children('div:first').children('div:nth-child(3)').children().children('div:nth-child(3)').children('div:nth-child(1)');
@@ -270,22 +306,14 @@
             firstCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Europa', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + firstNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
             secondCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Asien', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + secondNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
             thirdCluster.html("<div class='cluster-content'><p class='cluster-title'>@php _e( 'Amerika', 'ThomasLloyd'); @endphp</p><p class='cluster-text'>" + thirdNumberOfLocations + " @php _e( 'Standorte', 'ThomasLloyd'); @endphp</p></div>");
+            jQuery('.zoom-out').hide();
           } else {
             firstCluster.html( firstNumberOfLocations );
             secondCluster.html( secondNumberOfLocations );
             thirdCluster.html( thirdNumberOfLocations );
+            jQuery('.zoom-out').show();
           }
-        }, 1000);
-      });
-
-      map.addListener('idle', function(evt) {
-        jQuery('.pin-info-container').on( 'click', function() {
-          console.log(jQuery(this).text());
-          jQuery(this).toggleClass('pro-class');
-          map.setZoom(2);
-          var center = new google.maps.LatLng(50, 0);
-          map.panTo(center);
-        });
+        }, 200);
       });
 
 
@@ -304,7 +332,7 @@
           pin: '@php echo App\asset_path('images/tl-map-pin.png'); @endphp',
           title: '',
           // infocontent: '<div class="pin-info-container"><p id="@php echo cleanme(get_sub_field('link_text')); @endphp">@php echo get_sub_field('link_text'); @endphp</p></div>'
-          infocontent: '<div class="pin-info-container">@php echo get_sub_field('link_text'); @endphp</div>'
+          infocontent: '<div id="pin-info-container-id" class="pin-info-container"><button onclick="tlLocations()">@php echo get_sub_field('link_text'); @endphp</button></div>'
         },
         @php
         endwhile;
@@ -312,17 +340,40 @@
       @endphp
     ]
 
+
+
+
+    function tlLocations() {
+      jQuery('.contact-form-wrapper').toggleClass('test');
+    }
+
     </script>
+
+
+
 
     <style media="screen">
 
-    #map {
-      height: 600px;
-      width: 100%;
-    }
+      #map {
+        height: 600px;
+        width: 100%;
+      }
+
+      .gm-locations-wrapper {
+        position: relative;
+      }
 
       .gm-style-iw-d {
         overflow: visible !important;
+      }
+
+      .pin-info-container button {
+        display: inline-block;
+        color: #fff;
+        text-transform: uppercase;
+        background-color: #3D4958;
+        border: none;
+        outline: 0;
       }
 
       .pin-info-container {
@@ -395,8 +446,24 @@
         height: 100vh;
         position: absolute;
         top: 0;
-        right: 0;
+        right: -225px;
         background: #3D4958;
+      }
+
+      .zoom-out {
+        background: red;
+        position: absolute;
+        bottom: 24px;
+        right: 10px;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        font-size: 40px;
+        line-height: 35px;
+        color: #fff;
+        background: #3D4958;
+        cursor: pointer;
       }
 
     </style>
